@@ -29,20 +29,17 @@ function AddUser(db, req, res) {
 }
 
 function Login(db, req, res) {
-	db.collection("users").findOne(
-		{ username: req.body.username },
-		(err, data) => {
-			if (err) res.status(400).send(), console.log(err);
-			else if (data != null && data.password == md5(req.body.password)) {
-				db.collection("sessions").insertOne(
-					{ username: req.body.username, time: new Date() },
-					(err, news) => {
-						res.status(200).send({ id: news.insertedId });
-					}
-				);
-			} else res.status(404).send({ reason: "wrong password/username" });
-		}
-	);
+	db.collection("users").findOne({ email: req.body.email }, (err, data) => {
+		if (err) res.status(400).send(), console.log(err);
+		else if (data != null && data.password == md5(req.body.password)) {
+			db.collection("sessions").insertOne(
+				{ username: req.body.username, time: new Date() },
+				(err, news) => {
+					res.status(200).send({ id: news.insertedId });
+				}
+			);
+		} else res.status(404).send({ reason: "wrong password/username" });
+	});
 }
 
 exports.AddUser = AddUser;
