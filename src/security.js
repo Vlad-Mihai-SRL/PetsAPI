@@ -31,7 +31,7 @@ function AddUser(db, req, res) {
 
 function Login(db, req, res) {
 	db.collection("users").findOne({ email: req.body.email }, (err, data) => {
-		if (err) res.status(400).send(), console.log(err);
+		if (err) res.send(), console.log(err);
 		else if (data != null && data.password == md5(req.body.password)) {
 			db.collection("sessions").insertOne(
 				{ email: req.body.email, time: new Date() },
@@ -39,7 +39,7 @@ function Login(db, req, res) {
 					res.status(200).send({ id: news.insertedId });
 				}
 			);
-		} else res.status(403).send({ reason: "wrong password/username" });
+		} else res.send({ reason: "wrong password/username" });
 	});
 }
 
@@ -52,12 +52,11 @@ function ValidateSession(db, req, res) {
 			{ _id: ObjectID(id), email: email },
 			(err, data) => {
 				console.log(data);
-				if (data == null || err)
-					res.status(400).send({ reason: "invalid/not found" });
+				if (data == null || err) res.send({ reason: "invalid/not found" });
 				else res.status(200).send();
 			}
 		);
-	else res.status(400).send({ reason: "invalid" });
+	else res.send({ reason: "invalid" });
 }
 
 exports.AddUser = AddUser;
