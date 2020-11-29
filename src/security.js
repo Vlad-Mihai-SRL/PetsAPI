@@ -46,12 +46,10 @@ function Login(db, req, res) {
 function ValidateSession(db, req, res) {
 	id = req.params.id;
 	email = req.params.email;
-	console.log(id, email);
 	if (ObjectID.isValid(id))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(id), email: email },
 			(err, data) => {
-				console.log(data);
 				if (data == null || err) res.send({ reason: "invalid/not found" });
 				else res.status(200).send();
 			}
