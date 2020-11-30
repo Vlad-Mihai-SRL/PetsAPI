@@ -20,7 +20,7 @@ function AddUser(db, req, res) {
 		},
 		(err, data) => {
 			if (err)
-				res.status(409).send({ reason: "Username already exists" }),
+				res.send({ reason: "Username already exists" }),
 					console.log("Dupe key : ", req.body.username);
 			else res.status(201).send();
 		}
