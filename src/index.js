@@ -11,6 +11,8 @@ const cors = require("cors");
 const SecurityModule = require("./security");
 const FunctionalityModule = require("./page_functionality");
 const fs = require("fs");
+const fileUpload = require("express-fileupload");
+const morgan = require("morgan");
 
 async function main() {
 	const uri = process.env.DB_URI;
@@ -24,6 +26,15 @@ async function main() {
 	const app = express();
 	app.use(express.json());
 	app.use(cors());
+	app.use(
+		fileUpload({
+			createParentPath: true,
+			limits: {
+				fileSize: 10 * 1024 * 1024,
+			},
+		})
+	);
+	app.use(morgan("dev"));
 
 	app.use("/public", express.static(path.join(__dirname, "..", "public")));
 
@@ -43,6 +54,9 @@ async function main() {
 		SecurityModule.updateProfileAnimal(db, req, res);
 	});
 
+	app.post("/api/modify-profilepic", async (req, res) => {
+		SecurityModule.changeProfilePic(db, req, res);
+	});
 	app.get("/api/check-session/:id/:email", (req, res) => {
 		SecurityModule.ValidateSession(db, req, res);
 	});

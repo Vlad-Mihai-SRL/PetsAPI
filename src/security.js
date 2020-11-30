@@ -105,7 +105,45 @@ function updateProfileAnimal(db, req, res) {
 	else res.send({ reason: "invalid" });
 }
 
+async function changeProfilePic(db, req, res) {
+	try {
+		if (!req.files) {
+			res.send({ reason: "no files uploaded" });
+		} else {
+			avatar = req.files.avatar;
+			email = req.body.email;
+			sessionID = req.body.id;
+			ind = req.body.ind;
+			if (ObjectID.isValid(sessionID)) {
+				db.collection("sessions").findOne(
+					{ _id: ObjectID(sessionID) },
+					(err, data) => {
+						if (err || data == null) res.send({ reason: "wrong" });
+						else {
+							avatar.mv(
+								path.join(
+									__dirname,
+									"..",
+									"public",
+									"users",
+									email,
+									ind,
+									"pp.png"
+								)
+							);
+							res.send();
+						}
+					}
+				);
+			} else res.send({ reason: "wrong sid" });
+		}
+	} catch (err) {
+		res.send({ reason: "unknown" });
+	}
+}
+
 exports.updateProfileAnimal = updateProfileAnimal;
 exports.AddUser = AddUser;
 exports.Login = Login;
 exports.ValidateSession = ValidateSession;
+exports.changeProfilePic = changeProfilePic;
