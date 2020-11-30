@@ -34,7 +34,6 @@ async function main() {
 			},
 		})
 	);
-	app.use(morgan("dev"));
 
 	app.use("/public", express.static(path.join(__dirname, "..", "public")));
 
