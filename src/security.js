@@ -80,6 +80,32 @@ function ValidateSession(db, req, res) {
 	else res.send({ reason: "invalid" });
 }
 
+function updateProfileAnimal(db, req, res) {
+	ind = req.body.ind;
+	sid = req.body.id;
+	email = req.body.email;
+	animal = req.body.animal;
+	if (ObjectID.isValid(sid))
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: email },
+			(err, data) => {
+				if (data == null || err) res.send({ reason: "invalid/not found" });
+				else {
+					db.collection("users").updateOne(
+						{ email: email },
+						{ $set: { [`pets.${ind}`]: animal } },
+						(err, data) => {
+							if (err || data == null) res.send({ reason: "unknown" });
+							else res.send();
+						}
+					);
+				}
+			}
+		);
+	else res.send({ reason: "invalid" });
+}
+
+exports.updateProfileAnimal = updateProfileAnimal;
 exports.AddUser = AddUser;
 exports.Login = Login;
 exports.ValidateSession = ValidateSession;

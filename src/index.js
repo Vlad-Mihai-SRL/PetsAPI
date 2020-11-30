@@ -38,6 +38,11 @@ async function main() {
 	app.post("/api/login", (req, res) => {
 		SecurityModule.Login(db, req, res);
 	});
+
+	app.post("/api/modify-animal", (req, res) => {
+		SecurityModule.updateProfileAnimal(db, req, res);
+	});
+
 	app.get("/api/check-session/:id/:email", (req, res) => {
 		SecurityModule.ValidateSession(db, req, res);
 	});
