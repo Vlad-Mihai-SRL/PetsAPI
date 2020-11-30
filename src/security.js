@@ -42,7 +42,7 @@ function AddUser(db, req, res) {
 							"users",
 							req.body.email,
 							"0",
-							"pp"
+							"pp.png"
 						)
 					)
 				);
