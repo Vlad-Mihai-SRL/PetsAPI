@@ -9,6 +9,8 @@ const MongoClient = require("mongodb").MongoClient;
 const dotenv = require("dotenv").config({ path: path.join(__dirname, ".env") });
 const cors = require("cors");
 const SecurityModule = require("./security");
+const FunctionalityModule = require("./page_functionality");
+const fs = require("fs");
 
 async function main() {
 	const uri = process.env.DB_URI;
@@ -22,6 +24,8 @@ async function main() {
 	const app = express();
 	app.use(express.json());
 	app.use(cors());
+
+	app.use("/public", express.static(path.join(__dirname, "..", "public")));
 
 	app.get("/api/test", (req, res) => {
 		res.send("hello world!");
@@ -37,7 +41,9 @@ async function main() {
 	app.get("/api/check-session/:id/:email", (req, res) => {
 		SecurityModule.ValidateSession(db, req, res);
 	});
-
+	app.get("/api/fetch-user/:mail", (req, res) => {
+		FunctionalityModule.getProfile(db, req, res);
+	});
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});

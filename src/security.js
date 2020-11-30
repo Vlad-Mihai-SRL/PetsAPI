@@ -1,5 +1,7 @@
 const md5 = require("md5");
 const ObjectID = require("mongodb").ObjectID;
+const fs = require("fs");
+const path = require("path");
 
 function AddUser(db, req, res) {
 	db.collection("users").insertOne(
@@ -22,7 +24,30 @@ function AddUser(db, req, res) {
 			if (err)
 				res.send({ reason: "Username already exists" }),
 					console.log("Dupe key : ", req.body.username);
-			else res.status(201).send();
+			else {
+				fs.mkdirSync(
+					path.join(__dirname, "..", "public", "users", req.body.email)
+				);
+				fs.mkdirSync(
+					path.join(__dirname, "..", "public", "users", req.body.email, "0")
+				);
+				fs.createReadStream(
+					path.join(__dirname, "..", "public", "defaultpp.png")
+				).pipe(
+					fs.createWriteStream(
+						path.join(
+							__dirname,
+							"..",
+							"public",
+							"users",
+							req.body.email,
+							"0",
+							"pp"
+						)
+					)
+				);
+				res.status(201).send();
+			}
 		}
 	);
 }
