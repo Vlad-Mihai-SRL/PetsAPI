@@ -30,7 +30,7 @@ async function main() {
 		fileUpload({
 			createParentPath: true,
 			limits: {
-				fileSize: 10 * 1024 * 1024,
+				fileSize: 32 * 1024 * 1024,
 			},
 		})
 	);

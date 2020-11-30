@@ -114,6 +114,7 @@ async function changeProfilePic(db, req, res) {
 			email = req.body.email;
 			sessionID = req.body.id;
 			ind = req.body.ind;
+			console.log(email, sessionID, ind, avatar.name);
 			if (ObjectID.isValid(sessionID)) {
 				db.collection("sessions").findOne(
 					{ _id: ObjectID(sessionID) },
