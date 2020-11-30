@@ -7,18 +7,15 @@ function AddUser(db, req, res) {
 			email: req.body.email,
 			username: req.body.username,
 			password: md5(req.body.password),
-			breed: req.body.breed,
-			sex: req.body.sex,
-			color: req.body.color,
-			weight: req.body.weight,
-			diet: req.body.diet,
-			toys: req.body.toys,
-			personality: req.body.personality,
-			medical: req.body.medical,
-			likes: req.body.likes,
-			dislikes: req.body.dislikes,
+			pets: req.body.pets
+				.map((val) => {
+					val.story = {};
+					return val;
+				})
+				.filter((val) => {
+					return true;
+				}),
 			friends: [],
-			story: {},
 		},
 		(err, data) => {
 			if (err)
