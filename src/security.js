@@ -7,6 +7,7 @@ function AddUser(db, req, res) {
 			email: req.body.email,
 			username: req.body.username,
 			password: md5(req.body.password),
+			fullname: req.body.fullname,
 			pets: req.body.pets
 				.map((val) => {
 					val.story = {};
