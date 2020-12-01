@@ -85,6 +85,7 @@ function updateProfileAnimal(db, req, res) {
 	sid = req.body.id;
 	email = req.body.email;
 	animal = req.body.animal;
+	fname = req.body.fullname;
 	if (ObjectID.isValid(sid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
@@ -93,7 +94,7 @@ function updateProfileAnimal(db, req, res) {
 				else {
 					db.collection("users").updateOne(
 						{ email: email },
-						{ $set: { [`pets.${ind}`]: animal } },
+						{ $set: { [`pets.${ind}`]: animal, fullname: fname } },
 						(err, data) => {
 							if (err || data == null) res.send({ reason: "unknown" });
 							else res.send();

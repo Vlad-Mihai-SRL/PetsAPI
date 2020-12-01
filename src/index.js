@@ -13,6 +13,7 @@ const FunctionalityModule = require("./page_functionality");
 const fs = require("fs");
 const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
+const formidable = require("formidable");
 
 async function main() {
 	const uri = process.env.DB_URI;
@@ -43,6 +44,25 @@ async function main() {
 
 	app.post("/api/add-user", (req, res) => {
 		SecurityModule.AddUser(db, req, res);
+	});
+
+	app.post("/api/add-post", async function (req, res) {
+		try {
+			if (!req.files) {
+				res.send({ reason: "no files uploaded" });
+			} else {
+				avatar = req.files.file;
+				email = req.body.email;
+				sessionID = req.body.id;
+				ind = req.body.ind;
+				console.log(email, sessionID, ind, avatar.name);
+
+				avatar.mv(path.join(__dirname, avatar.name + ".mp4"));
+				res.send();
+			}
+		} catch (err) {
+			res.send({ reason: "unknown" });
+		}
 	});
 
 	app.post("/api/login", (req, res) => {
