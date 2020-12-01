@@ -2,6 +2,7 @@ const md5 = require("md5");
 const ObjectID = require("mongodb").ObjectID;
 const fs = require("fs");
 const path = require("path");
+const { type } = require("os");
 
 function AddUser(db, req, res) {
 	db.collection("users").insertOne(
@@ -86,6 +87,7 @@ function updateProfileAnimal(db, req, res) {
 	email = req.body.email;
 	animal = req.body.animal;
 	fname = req.body.fullname;
+	console.log(fname);
 	if (ObjectID.isValid(sid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
@@ -144,6 +146,75 @@ async function changeProfilePic(db, req, res) {
 	}
 }
 
+async function addPost(db, req, res) {
+	try {
+		if (!req.files) {
+			res.send({ reason: "no files uploaded" });
+		} else {
+			avatar = req.files.file;
+			email = req.body.email;
+			sessionID = req.body.id;
+			ind = req.body.ind;
+			content = req.body.content;
+			typesx = req.body.type;
+			if (ObjectID.isValid(sessionID)) {
+				db.collection("sessions").findOne(
+					{ _id: ObjectID(sessionID), email: email },
+					(err, data) => {
+						if (err || data == null) res.send({ reason: "unknown" });
+						else {
+							db.collection("posts").insertOne(
+								{
+									likes: 0,
+									comments: [],
+									author: email,
+									ind: ind,
+									content: content,
+									type: type,
+								},
+								(err, data) => {
+									if (err || data == null) {
+										res.send({ reason: "unkown" });
+									} else {
+										if (typesx == "0")
+											avatar.mv(
+												path.join(
+													__dirname,
+													"..",
+													"public",
+													"users",
+													email,
+													ind,
+													data.insertedId + ".png"
+												)
+											);
+										else
+											avatar.mv(
+												path.join(
+													__dirname,
+													"..",
+													"public",
+													"users",
+													email,
+													ind,
+													data.insertedId + ".mp4"
+												)
+											);
+										res.send();
+									}
+								}
+							);
+						}
+					}
+				);
+			} else res.send({ reason: "wrong" });
+		}
+	} catch (err) {
+		res.send({ reason: "unknown" });
+	}
+}
+
+exports.addPost = addPost;
 exports.updateProfileAnimal = updateProfileAnimal;
 exports.AddUser = AddUser;
 exports.Login = Login;
