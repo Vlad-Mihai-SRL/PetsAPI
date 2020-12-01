@@ -170,7 +170,7 @@ async function addPost(db, req, res) {
 									author: email,
 									ind: ind,
 									content: content,
-									type: type,
+									typesx: typesx,
 								},
 								(err, data) => {
 									if (err || data == null) {
