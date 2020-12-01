@@ -156,7 +156,7 @@ async function addPost(db, req, res) {
 			sessionID = req.body.id;
 			ind = req.body.ind;
 			content = req.body.content;
-			typesx = req.body.type;
+			typesx = req.body.typesx;
 			if (ObjectID.isValid(sessionID)) {
 				db.collection("sessions").findOne(
 					{ _id: ObjectID(sessionID), email: email },
