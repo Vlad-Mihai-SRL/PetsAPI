@@ -176,7 +176,7 @@ async function addPost(db, req, res) {
 									if (err || data == null) {
 										res.send({ reason: "unkown" });
 									} else {
-										if (typesx == "0")
+										if (typesx == "photo")
 											avatar.mv(
 												path.join(
 													__dirname,
