@@ -11,6 +11,7 @@ function AddUser(db, req, res) {
 			username: req.body.username,
 			password: md5(req.body.password),
 			fullname: req.body.fullname,
+			ownerdate: req.bodu.ownerdate,
 			pets: req.body.pets
 				.map((val) => {
 					val.story = {};
@@ -86,6 +87,7 @@ function updateProfileAnimal(db, req, res) {
 	sid = req.body.id;
 	email = req.body.email;
 	animal = req.body.animal;
+	ownerdate = req.body.ownerdate;
 	fname = req.body.fullname;
 	console.log(fname);
 	if (ObjectID.isValid(sid))
@@ -96,7 +98,13 @@ function updateProfileAnimal(db, req, res) {
 				else {
 					db.collection("users").updateOne(
 						{ email: email },
-						{ $set: { [`pets.${ind}`]: animal, fullname: fname } },
+						{
+							$set: {
+								[`pets.${ind}`]: animal,
+								fullname: fname,
+								ownerdate: ownerdate,
+							},
+						},
 						(err, data) => {
 							if (err || data == null) res.send({ reason: "unknown" });
 							else res.send();
@@ -165,7 +173,8 @@ async function addPost(db, req, res) {
 						else {
 							db.collection("posts").insertOne(
 								{
-									likes: 0,
+									nrlikes: 0,
+									likes: [],
 									comments: [],
 									author: email,
 									ind: ind,
