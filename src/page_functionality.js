@@ -36,6 +36,7 @@ function getFeed(db, req, res) {
 					db.collection("posts")
 						.find()
 						.toArray((err, items) => {
+							items.sort((a, b) => new Date(a.date) < new Date(b.date));
 							if (err || items == null) res.send("no posts");
 							else res.send(items);
 						});

@@ -180,6 +180,7 @@ async function addPost(db, req, res) {
 									ind: ind,
 									content: content,
 									typesx: typesx,
+									date: new Date(),
 								},
 								(err, data) => {
 									if (err || data == null) {
