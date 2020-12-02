@@ -11,7 +11,7 @@ function AddUser(db, req, res) {
 			username: req.body.username,
 			password: md5(req.body.password),
 			fullname: req.body.fullname,
-			ownerdate: req.bodu.ownerdate,
+			ownerdate: req.body.ownerdate,
 			pets: req.body.pets
 				.map((val) => {
 					val.story = {};
