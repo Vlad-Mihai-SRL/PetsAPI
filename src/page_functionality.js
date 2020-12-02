@@ -45,6 +45,40 @@ function getFeed(db, req, res) {
 	} else res.send({ reason: "invalid id" });
 }
 
+function likePage(db, req, res) {
+	sid = req.body.sessionid;
+	postid = req.body.postid;
+	email = req.body.email;
+	if (ObjectID.isValid(postid) && ObjectID.isValid(sid))
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: email },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "wrong session" });
+				else {
+					db.collection("posts").findOne(
+						{ _id: ObjectID(postid) },
+						(err, data) => {
+							if (err || data == null) res.send({ reason: "wrong postid" });
+							else {
+								if (data.likes.includes(email))
+									res.send({ reason: "already liked", sr: "liked already" });
+								else {
+									res.send();
+									db.collection("posts").updateOne(
+										{ _id: ObjectID(postid) },
+										{ $inc: { nrlikes: 1 }, $push: { likes: email } }
+									);
+								}
+							}
+						}
+					);
+				}
+			}
+		);
+	else res.send({ reason: "wrong id/ids" });
+}
+
+exports.likePage = likePage;
 exports.getFeed = getFeed;
 exports.getProfile = getProfile;
 exports.getPost = getPost;

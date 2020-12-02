@@ -76,6 +76,10 @@ async function main() {
 		FunctionalityModule.getFeed(db, req, res);
 	});
 
+	app.post("/api/like-post", (req, res) => {
+		FunctionalityModule.likePage(db, req, res);
+	});
+
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});
