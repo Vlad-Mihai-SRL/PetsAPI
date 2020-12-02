@@ -67,6 +67,15 @@ async function main() {
 	app.get("/api/fetch-user/:mail", (req, res) => {
 		FunctionalityModule.getProfile(db, req, res);
 	});
+
+	app.get("/api/fetch-post/:id", (req, res) => {
+		FunctionalityModule.getPost(db, req, res);
+	});
+
+	app.get("/api/get-feed/:email/:id", (req, res) => {
+		FunctionalityModule.getFeed(db, req, res);
+	});
+
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});
