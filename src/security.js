@@ -164,6 +164,7 @@ async function addPost(db, req, res) {
 			sessionID = req.body.id;
 			ind = req.body.ind;
 			content = req.body.content;
+			petname = req.body.petname;
 			typesx = req.body.typesx;
 			if (ObjectID.isValid(sessionID)) {
 				db.collection("sessions").findOne(
@@ -177,6 +178,7 @@ async function addPost(db, req, res) {
 									likes: [],
 									comments: [],
 									author: email,
+									petname: petname,
 									ind: ind,
 									content: content,
 									typesx: typesx,
