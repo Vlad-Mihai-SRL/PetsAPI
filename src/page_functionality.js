@@ -89,6 +89,8 @@ function addComment(db, req, res) {
 	email = req.body.email;
 	content = req.body.content;
 	ind = req.body.ind;
+	fullname = req.body.fullname;
+	petname = req.body.petname;
 	if (ObjectID.isValid(pid) && ObjectID.isValid(sessionid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sessionid), email: email },
@@ -103,6 +105,8 @@ function addComment(db, req, res) {
 									author: email,
 									date: new Date(),
 									ind: ind,
+									petname: petname,
+									fullname: fullname,
 									content: content,
 								},
 							},
