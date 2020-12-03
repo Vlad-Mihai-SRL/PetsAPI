@@ -37,12 +37,18 @@ function getFeed(db, req, res) {
 						.find()
 						.toArray((err, items) => {
 							if (err || items == null) res.send("no posts");
-							else
+							else {
 								res.send(
-									items.sort((a, b) => {
-										return new Date(b.date) - new Date(a.date);
-									})
+									items
+										.sort((a, b) => {
+											return new Date(b.date) - new Date(a.date);
+										})
+										.map((val) => {
+											val.comments.reverse();
+											return val;
+										})
 								);
+							}
 						});
 				}
 			}
