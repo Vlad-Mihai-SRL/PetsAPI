@@ -80,6 +80,10 @@ async function main() {
 		FunctionalityModule.likePage(db, req, res);
 	});
 
+	app.post("/api/add-comment", (req, res) => {
+		FunctionalityModule.addComment(db, req, res);
+	});
+
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});

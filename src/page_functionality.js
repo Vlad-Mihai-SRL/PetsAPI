@@ -83,6 +83,39 @@ function likePage(db, req, res) {
 	else res.send({ reason: "wrong id/ids" });
 }
 
+function addComment(db, req, res) {
+	pid = req.body.postid;
+	sessionid = req.body.sessionid;
+	email = req.body.email;
+	content = req.body.content;
+	ind = req.body.ind;
+	if (ObjectID.isValid(pid) && ObjectID.isValid(sessionid))
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sessionid), email: email },
+			(err, data) => {
+				if (err || data == null) res.send("wrong id");
+				else {
+					db.collection("posts").updateOne(
+						{ _id: ObjectID(pid) },
+						{
+							$push: {
+								comments: {
+									author: email,
+									date: new Date(),
+									ind: ind,
+									content: content,
+								},
+							},
+						}
+					);
+					res.send();
+				}
+			}
+		);
+	else res.send({ reason: "invalid ids" });
+}
+
+exports.addComment = addComment;
 exports.likePage = likePage;
 exports.getFeed = getFeed;
 exports.getProfile = getProfile;
