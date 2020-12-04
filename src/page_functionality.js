@@ -191,9 +191,14 @@ function respondToFriendRequest(db, req, res) {
 								topetname: topetname,
 								toind: toind,
 							};
-							console.log(data.frlist, aux);
 							if (err || data == null) res.send({ reason: "unknown" });
 							else {
+								console.log(
+									data.frlist.filter((val) => {
+										return _.isEqual(val, aux);
+									})
+								);
+								console.log(aux);
 								if (
 									data.frlist.filter((val) => {
 										return _.isEqual(val, aux);
