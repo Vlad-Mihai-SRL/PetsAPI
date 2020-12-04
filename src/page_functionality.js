@@ -191,6 +191,7 @@ function respondToFriendRequest(db, req, res) {
 								topetname: topetname,
 								toind: toind,
 							};
+							console.log(data.frlist, aux);
 							if (err || data == null) res.send({ reason: "unknown" });
 							else {
 								if (
