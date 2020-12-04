@@ -247,6 +247,29 @@ function respondToFriendRequest(db, req, res) {
 	else res.send({ reason: "invalid id" });
 }
 
+function getFriendRequests(db, req, res) {
+	sid = req.body.sessionid;
+	email = req.body.email;
+	if (ObjectID.isValid(sid)) {
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: email },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "invalid id" });
+				else {
+					db.collection("friendrequest").findOne(
+						{ email: email },
+						(err2, data2) => {
+							if (err2 || data2 == null) res.send({ reason: "invalid email" });
+							else res.send(data2);
+						}
+					);
+				}
+			}
+		);
+	} else res.send({ reason: "unknown" });
+}
+
+exports.getFriendRequests = getFriendRequests;
 exports.respondToFriendRequest = respondToFriendRequest;
 exports.addFriendRequest = addFriendRequest;
 exports.addComment = addComment;
