@@ -1,7 +1,7 @@
 const e = require("express");
 const { fromPairs } = require("lodash");
 const { ObjectId } = require("mongodb");
-
+const _ = require("lodash");
 const ObjectID = require("mongodb").ObjectID;
 
 function getProfile(db, req, res) {
@@ -184,18 +184,18 @@ function respondToFriendRequest(db, req, res) {
 					db.collection("friendrequest").findOne(
 						{ email: toemail },
 						(err, data) => {
-							let aux = JSON.stringify({
+							let aux = {
 								email: fromemail,
 								fromind: fromind,
 								frompetname: frompetname,
 								topetname: topetname,
 								toind: toind,
-							});
+							};
 							if (err || data == null) res.send({ reason: "unknown" });
 							else {
 								if (
 									data.frlist.filter((val) => {
-										return JSON.stringify(val) == aux;
+										return _.isEqual(val, aux);
 									}).length > 0
 								) {
 									db.collection("friendrequest").updateOne(
