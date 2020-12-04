@@ -199,6 +199,10 @@ function respondToFriendRequest(db, req, res) {
 									})
 								);
 								console.log(aux);
+								console.log(
+									_.isEqual({ a: "abc", b: "b" }, { b: "b", a: "abc" })
+								);
+								console.log(_.isEqual(data.frlist[1], aux));
 								if (
 									data.frlist.filter((val) => {
 										return _.isEqual(val, aux);
