@@ -84,6 +84,14 @@ async function main() {
 		FunctionalityModule.addComment(db, req, res);
 	});
 
+	app.post("/api/add-friend-request", (req, res) => {
+		FunctionalityModule.addFriendRequest(db, req, res);
+	});
+
+	app.post("/api/respond-to-friend-request", (req, res) => {
+		FunctionalityModule.respondToFriendRequest(db, req, res);
+	});
+
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});

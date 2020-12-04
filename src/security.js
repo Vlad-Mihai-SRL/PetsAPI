@@ -27,6 +27,15 @@ function AddUser(db, req, res) {
 				res.send({ reason: "Username already exists" }),
 					console.log("Dupe key : ", req.body.username);
 			else {
+				db.collection("friendrequest").insertOne(
+					{ email: req.body.email, ind: "0", frlist: [] },
+					(err, data) => {
+						if (err || data == null) res.send({ reason: "Dupe keys?" });
+						else {
+							res.send();
+						}
+					}
+				);
 				fs.mkdirSync(
 					path.join(__dirname, "..", "public", "users", req.body.email)
 				);

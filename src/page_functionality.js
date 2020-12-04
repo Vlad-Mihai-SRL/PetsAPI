@@ -1,3 +1,7 @@
+const e = require("express");
+const { fromPairs } = require("lodash");
+const { ObjectId } = require("mongodb");
+
 const ObjectID = require("mongodb").ObjectID;
 
 function getProfile(db, req, res) {
@@ -125,6 +129,126 @@ function addComment(db, req, res) {
 	else res.send({ reason: "invalid ids" });
 }
 
+function addFriendRequest(db, req, res) {
+	sid = req.body.sessionid;
+	toemail = req.body.toemail;
+	fromemail = req.body.fromemail;
+	fromind = req.body.fromind;
+	toind = req.body.toind;
+	frompetname = req.body.frompetname;
+	topetname = req.body.topetname;
+	if (ObjectID.isValid(sid))
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: fromemail },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "invalid id" });
+				else
+					db.collection("friendrequest").updateOne(
+						{ email: toemail },
+						{
+							$addToSet: {
+								frlist: {
+									email: fromemail,
+									fromind: fromind,
+									frompetname: frompetname,
+									topetname: topetname,
+									toind: toind,
+								},
+							},
+						},
+						(err, data) => {
+							if (err || data == null) res.send({ reason: "unknown" });
+							else res.send();
+						}
+					);
+			}
+		);
+	else res.send({ reason: "invalid id" });
+}
+
+function respondToFriendRequest(db, req, res) {
+	sid = req.body.sessionid;
+	toemail = req.body.toemail;
+	fromemail = req.body.fromemail;
+	fromind = req.body.fromind;
+	toind = req.body.toind;
+	frompetname = req.body.frompetname;
+	topetname = req.body.topetname;
+	tor = req.body.tor;
+	if (ObjectID.isValid(sid))
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: toemail },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "invalid id" });
+				else
+					db.collection("friendrequest").findOne(
+						{ email: toemail },
+						(err, data) => {
+							let aux = JSON.stringify({
+								email: fromemail,
+								fromind: fromind,
+								frompetname: frompetname,
+								topetname: topetname,
+								toind: toind,
+							});
+							if (err || data == null) res.send({ reason: "unknown" });
+							else {
+								if (
+									data.frlist.filter((val) => {
+										return JSON.stringify(val) == aux;
+									}).length > 0
+								) {
+									db.collection("friendrequest").updateOne(
+										{ email: toemail },
+										{
+											$pull: {
+												frlist: {
+													email: fromemail,
+													fromind: fromind,
+													frompetname: frompetname,
+													topetname: topetname,
+													toind: toind,
+												},
+											},
+										},
+										(err, data) => {
+											if (err || data == null) res.send({ reason: "unknown" });
+											else {
+												if (tor == "accepted") {
+													db.collection("users").updateOne(
+														{ email: fromemail },
+														{
+															$addToSet: {
+																friends: { email: toemail, ind: toind },
+															},
+														}
+													);
+													db.collection("users").updateOne(
+														{ email: toemail },
+														{
+															$addToSet: {
+																friends: { email: fromemail, ind: fromind },
+															},
+														}
+													);
+												} else {
+												}
+
+												res.send();
+											}
+										}
+									);
+								} else res.send({ reason: "invalid frreq" });
+							}
+						}
+					);
+			}
+		);
+	else res.send({ reason: "invalid id" });
+}
+
+exports.respondToFriendRequest = respondToFriendRequest;
+exports.addFriendRequest = addFriendRequest;
 exports.addComment = addComment;
 exports.likePage = likePage;
 exports.getFeed = getFeed;
