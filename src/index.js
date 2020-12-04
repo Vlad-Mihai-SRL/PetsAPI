@@ -96,6 +96,10 @@ async function main() {
 		FunctionalityModule.getFriendRequests(db, req, res);
 	});
 
+	app.get("/api/get-users", (req, res) => {
+		FunctionalityModule.searchUsers(db, req, res);
+	});
+
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});

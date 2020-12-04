@@ -193,16 +193,6 @@ function respondToFriendRequest(db, req, res) {
 							};
 							if (err || data == null) res.send({ reason: "unknown" });
 							else {
-								console.log(
-									data.frlist.filter((val) => {
-										return _.isEqual(val, aux);
-									})
-								);
-								console.log(aux);
-								console.log(
-									_.isEqual({ a: "abc", b: "b" }, { b: "b", a: "abc" })
-								);
-								console.log(_.isEqual(data.frlist[1], aux));
 								if (
 									data.frlist.filter((val) => {
 										return _.isEqual(val, aux);
@@ -279,6 +269,18 @@ function getFriendRequests(db, req, res) {
 	} else res.send({ reason: "unknown" });
 }
 
+function searchUsers(db, req, res) {
+	fullname = req.query.fullname;
+	petname = req.query.petname;
+	db.collection("users")
+		.find({ $text: { $search: fullname } })
+		.toArray((err, data) => {
+			if (err || data == null) res.send({ reason: "null" });
+			else res.send(data);
+		});
+}
+
+exports.searchUsers = searchUsers;
 exports.getFriendRequests = getFriendRequests;
 exports.respondToFriendRequest = respondToFriendRequest;
 exports.addFriendRequest = addFriendRequest;
