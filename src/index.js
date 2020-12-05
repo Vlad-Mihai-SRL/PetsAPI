@@ -14,6 +14,8 @@ const fs = require("fs");
 const fileUpload = require("express-fileupload");
 const morgan = require("morgan");
 const formidable = require("formidable");
+const Pusher = require("pusher");
+const MessageModule = require("./messages");
 
 async function main() {
 	const uri = process.env.DB_URI;
@@ -21,6 +23,21 @@ async function main() {
 		useNewUrlParser: true,
 		useUnifiedTopology: true,
 	});
+	const pusher = new Pusher({
+		appId: "1118434",
+		key: "a7acd3d224d7106769ad",
+		secret: "3aeeb7032cd2ed416b00",
+		cluster: "eu",
+		useTLS: true,
+	});
+
+	pusher
+		.trigger("coaieverzi", "newmessage", {
+			message: "Buna , lume ! ",
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 	await client.connect();
 	db = client.db("Yappy");
 
@@ -100,6 +117,12 @@ async function main() {
 		FunctionalityModule.searchUsers(db, req, res);
 	});
 
+	app.post("/api/add-message", (req, res) => {
+		MessageModule.addMessage(db, req, res, pusher);
+	});
+	app.get("/api/get-friend-list/:sessionid/:email", (req, res) => {
+		FunctionalityModule.getFriendList(db, req, res);
+	});
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});

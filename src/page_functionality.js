@@ -306,6 +306,42 @@ function searchUsers(db, req, res) {
 		});
 }
 
+function getFriendList(db, req, res) {
+	sid = req.params.sessionid;
+	email = req.params.email;
+	if (ObjectID.isValid(sid)) {
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: email },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "wrong login" });
+				else
+					db.collection("users").findOne({ email: email }, (err, data) => {
+						if (err || data == null)
+							res.send({ reason: "user does not exist" });
+						else {
+							frlist = data.friends.map((val) => val.email);
+							db.collection("users")
+								.find({ email: { $in: frlist } })
+								.toArray((err, data) => {
+									res.send(
+										data.map((val) => {
+											aux = {
+												email: val.email,
+												petname: val.pets[0].name,
+												_id: val._id,
+											};
+											return aux;
+										})
+									);
+								});
+						}
+					});
+			}
+		);
+	} else res.send({ reason: "invalid sid" });
+}
+
+exports.getFriendList = getFriendList;
 exports.searchUsers = searchUsers;
 exports.getFriendRequests = getFriendRequests;
 exports.respondToFriendRequest = respondToFriendRequest;
