@@ -37,23 +37,30 @@ function getFeed(db, req, res) {
 			(err, data) => {
 				if (err || data == null) res.send({ reason: "unknonwn" });
 				else {
-					db.collection("posts")
-						.find()
-						.toArray((err, items) => {
-							if (err || items == null) res.send("no posts");
-							else {
-								res.send(
-									items
-										.sort((a, b) => {
-											return new Date(b.date) - new Date(a.date);
-										})
-										.map((val) => {
-											val.comments.reverse();
-											return val;
-										})
-								);
-							}
-						});
+					db.collection("users").findOne({ email: email }, (err, data) => {
+						if (err || data == null) res.send({ reason: "invalid email" });
+						else {
+							frlist = data.friends.map((val) => val.email);
+							db.collection("posts")
+								.find({ author: { $in: frlist } })
+								.toArray((err, items) => {
+									if (err || items == null) res.send("no posts");
+									else {
+										res.send(
+											items
+												.sort((a, b) => {
+													return new Date(b.date) - new Date(a.date);
+												})
+												.slice(0, 1000)
+												.map((val) => {
+													val.comments.reverse();
+													return val;
+												})
+										);
+									}
+								});
+						}
+					});
 				}
 			}
 		);
