@@ -13,7 +13,7 @@ function addMessage(db, req, res, pusher) {
 			(err, data) => {
 				if (err || data == null) res.send({ reason: "wrong login" });
 				else {
-					pusher.trigger(receiverid + senderemail, "newmessage", {
+					pusher.trigger(senderid + receiveremail, "newmessage", {
 						message: content,
 					});
 					res.send();
