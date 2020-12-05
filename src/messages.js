@@ -29,4 +29,37 @@ function addMessage(db, req, res, pusher) {
 	else res.send({ reason: "wrong login / user" });
 }
 
+function getMessages(db, req, res) {
+	email1 = req.params.email1;
+	email2 = req.params.email2;
+	sessionid = req.params.sessionid;
+	if (ObjectID.isValid(sessionid)) {
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sessionid), email: email1 },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "wrong session" });
+				else
+					db.collection("messages")
+						.find({
+							sender: {
+								$in: [email1, email2],
+							},
+							receiver: { $in: [email1, email2] },
+						})
+						.toArray((err, items) => {
+							if (err || items == null) res.send([]);
+							else {
+								res.send(
+									items.sort((a, b) => {
+										new Date(a.date) - new Date(b.date);
+									})
+								);
+							}
+						});
+			}
+		);
+	} else res.send({ reason: "invalid session" });
+}
+
+exports.getMessages = getMessages;
 exports.addMessage = addMessage;
