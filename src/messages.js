@@ -49,11 +49,11 @@ function getMessages(db, req, res) {
 						.toArray((err, items) => {
 							if (err || items == null) res.send([]);
 							else {
-								res.send(
-									items.sort((a, b) => {
+								res.send({
+									list: items.sort((a, b) => {
 										new Date(a.date) - new Date(b.date);
-									})
-								);
+									}),
+								});
 							}
 						});
 			}
