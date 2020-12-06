@@ -3,6 +3,7 @@ const ObjectID = require("mongodb").ObjectID;
 const fs = require("fs");
 const path = require("path");
 const { type } = require("os");
+const sharp = require("sharp");
 
 function AddUser(db, req, res) {
 	db.collection("users").insertOne(
@@ -152,6 +153,7 @@ async function changeProfilePic(db, req, res) {
 									"pp.png"
 								)
 							);
+
 							res.send();
 						}
 					}
@@ -197,19 +199,57 @@ async function addPost(db, req, res) {
 									if (err || data == null) {
 										res.send({ reason: "unkown" });
 									} else {
-										if (typesx == "Photo")
-											avatar.mv(
-												path.join(
-													__dirname,
-													"..",
-													"public",
-													"users",
-													email,
-													ind,
-													data.insertedId + ".png"
+										if (typesx == "Photo") {
+											avatar
+												.mv(
+													path.join(
+														__dirname,
+														"..",
+														"public",
+														"users",
+														email,
+														ind,
+														data.insertedId + ".jpg"
+													)
 												)
-											);
-										else
+												.then((val) => {
+													sharp(
+														path.join(
+															__dirname,
+															"..",
+															"public",
+															"users",
+															email,
+															ind,
+															data.insertedId + ".jpg"
+														)
+													).toFile(
+														path.join(
+															__dirname,
+															"..",
+															"public",
+															"users",
+															email,
+															ind,
+															data.insertedId + "_min" + ".webp"
+														),
+														(err, info) => {
+															if (err) console.log(err);
+															fs.unlinkSync(
+																path.join(
+																	__dirname,
+																	"..",
+																	"public",
+																	"users",
+																	email,
+																	ind,
+																	data.insertedId + ".jpg"
+																)
+															);
+														}
+													);
+												});
+										} else
 											avatar.mv(
 												path.join(
 													__dirname,
