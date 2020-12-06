@@ -57,7 +57,7 @@ function getMessages(db, req, res) {
 								);
 								res.send({
 									list: items.sort((a, b) => {
-										new Date(a.date) - new Date(b.date);
+										return new Date(a.date) - new Date(b.date);
 									}),
 								});
 							}
