@@ -49,6 +49,12 @@ function getMessages(db, req, res) {
 						.toArray((err, items) => {
 							if (err || items == null) res.send([]);
 							else {
+								console.log(items);
+								console.log(
+									items.sort((a, b) => {
+										new Date(a.date) - new Date(b.date);
+									})
+								);
 								res.send({
 									list: items.sort((a, b) => {
 										new Date(a.date) - new Date(b.date);
