@@ -41,6 +41,7 @@ function getFeed(db, req, res) {
 						if (err || data == null) res.send({ reason: "invalid email" });
 						else {
 							frlist = data.friends.map((val) => val.email);
+							frlist.push(email);
 							db.collection("posts")
 								.find({ author: { $in: frlist } })
 								.toArray((err, items) => {
