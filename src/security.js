@@ -54,7 +54,7 @@ function AddUser(db, req, res) {
 							"users",
 							req.body.email,
 							"0",
-							"pp.png"
+							"pp_min.webp"
 						)
 					)
 				);
@@ -142,17 +142,55 @@ async function changeProfilePic(db, req, res) {
 					(err, data) => {
 						if (err || data == null) res.send({ reason: "wrong" });
 						else {
-							avatar.mv(
-								path.join(
-									__dirname,
-									"..",
-									"public",
-									"users",
-									email,
-									ind,
-									"pp.png"
+							avatar
+								.mv(
+									path.join(
+										__dirname,
+										"..",
+										"public",
+										"users",
+										email,
+										ind,
+										"pp.png"
+									)
 								)
-							);
+								.then((val) => {
+									sharp(
+										path.join(
+											__dirname,
+											"..",
+											"public",
+											"users",
+											email,
+											ind,
+											"pp" + ".png"
+										)
+									).toFile(
+										path.join(
+											__dirname,
+											"..",
+											"public",
+											"users",
+											email,
+											ind,
+											"pp" + "_min" + ".webp"
+										),
+										(err, info) => {
+											if (err) console.log(err);
+											fs.unlinkSync(
+												path.join(
+													__dirname,
+													"..",
+													"public",
+													"users",
+													email,
+													ind,
+													"pp" + ".png"
+												)
+											);
+										}
+									);
+								});
 
 							res.send();
 						}
