@@ -13,14 +13,16 @@ function addMessage(db, req, res, pusher) {
 			(err, data) => {
 				if (err || data == null) res.send({ reason: "wrong login" });
 				else {
-					pusher.trigger(senderid + receiveremail, "newmessage", {
+					pusher.trigger(receiveremail, "newmessage", {
 						message: content,
+						sender: senderemail,
 					});
 					res.send();
 					db.collection("messages").insertOne({
 						sender: senderemail,
 						receiver: receiveremail,
 						content: content,
+						seen: false,
 						date: new Date(),
 					});
 				}
@@ -67,5 +69,28 @@ function getMessages(db, req, res) {
 	} else res.send({ reason: "invalid session" });
 }
 
+function hasNewMessages(db, req, res) {
+	sid = req.params.id;
+	email = req.params.email;
+	if (ObjectID.isValid(sid))
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: email },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "wrong id" });
+				else {
+					db.collection("messages").findOne(
+						{ receiver: email, seen: false },
+						(err, data) => {
+							if (err || data == null) res.send({ result: "no new messages" });
+							else res.send({ result: "you have a new message" });
+						}
+					);
+				}
+			}
+		);
+	else res.send({ reason: "invalid" });
+}
+
+exports.hasNewMessages = hasNewMessages;
 exports.getMessages = getMessages;
 exports.addMessage = addMessage;

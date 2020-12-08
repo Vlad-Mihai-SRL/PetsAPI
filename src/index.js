@@ -126,6 +126,9 @@ async function main() {
 	app.get("/api/get-messages/:sessionid/:email1/:email2", (req, res) => {
 		MessageModule.getMessages(db, req, res);
 	});
+	app.get("/api/has-new-messages/:id/:email", (req, res) => {
+		MessageModule.hasNewMessages(db, req, res);
+	});
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});
