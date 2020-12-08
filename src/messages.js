@@ -53,18 +53,15 @@ function getMessages(db, req, res) {
 						.toArray((err, items) => {
 							if (err || items == null) res.send([]);
 							else {
-								console.log(items);
-								console.log(
-									items.sort((a, b) => {
-										new Date(a.date) - new Date(b.date);
-									})
-								);
 								res.send({
 									list: items.sort((a, b) => {
 										return new Date(a.date) - new Date(b.date);
 									}),
 								});
-								db.collection("messages").updateMany({ sender: email1 });
+								db.collection("messages").updateMany(
+									{ sender: email1 },
+									{ $set: { seen: true } }
+								);
 							}
 						});
 			}
@@ -85,7 +82,6 @@ function hasNewMessages(db, req, res) {
 					db.collection("messages").findOne(
 						{ receiver: email, sender: email2, seen: false },
 						(err, data) => {
-							console.log(err, data);
 							if (err || data == null) res.send({ result: "no new messages" });
 							else res.send({ result: "you have a new message" });
 						}
