@@ -73,7 +73,7 @@ function hasNewMessages(db, req, res) {
 	sid = req.params.id;
 	email = req.params.email;
 	email2 = req.params.email2;
-	console.log("Entry : ", email2);
+	console.log("Entry : ", email2, email);
 	if (ObjectID.isValid(sid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
@@ -83,8 +83,8 @@ function hasNewMessages(db, req, res) {
 				else {
 					db.collection("messages")
 						.find({ receiver: email, sender: email2, seen: false })
-						.toArray((val) => {
-							if (val == null || val.length == 0)
+						.toArray((err, val) => {
+							if (err || val == null || val.length == 0)
 								res.send({ result: "no new messages" });
 							else res.send({ result: "you have a new message" });
 						});
