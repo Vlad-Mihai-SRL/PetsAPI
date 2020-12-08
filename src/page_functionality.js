@@ -5,7 +5,7 @@ const _ = require("lodash");
 const ObjectID = require("mongodb").ObjectID;
 
 function getProfile(db, req, res) {
-	mail = req.params.mail;
+	let mail = req.params.mail;
 	if (true)
 		db.collection("users").findOne({ email: mail }, (err, data) => {
 			if (err || data == null) res.send({ reason: "Invalid" });
@@ -19,7 +19,7 @@ function getProfile(db, req, res) {
 }
 
 function getPost(db, req, res) {
-	pid = req.params.id;
+	let pid = req.params.id;
 	if (ObjectID.isValid(pid)) {
 		db.collection("posts").findOne({ _id: ObjectID(pid) }, (err, data) => {
 			if (err || data == null) res.send({ reason: "invalid id" });
@@ -29,8 +29,8 @@ function getPost(db, req, res) {
 }
 
 function getFeed(db, req, res) {
-	email = req.params.email;
-	id = req.params.id;
+	let email = req.params.email;
+	let id = req.params.id;
 	if (ObjectID.isValid(id)) {
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(id), email: email },
@@ -69,9 +69,9 @@ function getFeed(db, req, res) {
 }
 
 function likePage(db, req, res) {
-	sid = req.body.sessionid;
-	postid = req.body.postid;
-	email = req.body.email;
+	let sid = req.body.sessionid;
+	let postid = req.body.postid;
+	let email = req.body.email;
 	if (ObjectID.isValid(postid) && ObjectID.isValid(sid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
@@ -102,13 +102,13 @@ function likePage(db, req, res) {
 }
 
 function addComment(db, req, res) {
-	pid = req.body.postid;
-	sessionid = req.body.sessionid;
-	email = req.body.email;
-	content = req.body.content;
-	ind = req.body.ind;
-	fullname = req.body.fullname;
-	petname = req.body.petname;
+	let pid = req.body.postid;
+	let sessionid = req.body.sessionid;
+	let email = req.body.email;
+	let content = req.body.content;
+	let ind = req.body.ind;
+	let fullname = req.body.fullname;
+	let petname = req.body.petname;
 	if (ObjectID.isValid(pid) && ObjectID.isValid(sessionid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sessionid), email: email },
@@ -138,13 +138,13 @@ function addComment(db, req, res) {
 }
 
 function addFriendRequest(db, req, res) {
-	sid = req.body.sessionid;
-	toemail = req.body.toemail;
-	fromemail = req.body.fromemail;
-	fromind = req.body.fromind;
-	toind = req.body.toind;
-	frompetname = req.body.frompetname;
-	topetname = req.body.topetname;
+	let sid = req.body.sessionid;
+	let toemail = req.body.toemail;
+	let fromemail = req.body.fromemail;
+	let fromind = req.body.fromind;
+	let toind = req.body.toind;
+	let frompetname = req.body.frompetname;
+	let topetname = req.body.topetname;
 	if (ObjectID.isValid(sid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: fromemail },
@@ -190,14 +190,14 @@ function addFriendRequest(db, req, res) {
 }
 
 function respondToFriendRequest(db, req, res) {
-	sid = req.body.sessionid;
-	toemail = req.body.toemail;
-	fromemail = req.body.fromemail;
-	fromind = req.body.fromind;
-	toind = req.body.toind;
-	frompetname = req.body.frompetname;
-	topetname = req.body.topetname;
-	tor = req.body.tor;
+	let sid = req.body.sessionid;
+	let toemail = req.body.toemail;
+	let fromemail = req.body.fromemail;
+	let fromind = req.body.fromind;
+	let toind = req.body.toind;
+	let frompetname = req.body.frompetname;
+	let topetname = req.body.topetname;
+	let tor = req.body.tor;
 	if (ObjectID.isValid(sid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: toemail },
@@ -275,8 +275,8 @@ function respondToFriendRequest(db, req, res) {
 }
 
 function getFriendRequests(db, req, res) {
-	sid = req.body.sessionid;
-	email = req.body.email;
+	let sid = req.body.sessionid;
+	let email = req.body.email;
 	if (ObjectID.isValid(sid)) {
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
@@ -297,8 +297,8 @@ function getFriendRequests(db, req, res) {
 }
 
 function searchUsers(db, req, res) {
-	fullname = req.query.fullname;
-	petname = req.query.petname;
+	let fullname = req.query.fullname;
+	let petname = req.query.petname;
 	db.collection("users")
 		.find({ $text: { $search: fullname } })
 		.toArray((err, data) => {
@@ -308,8 +308,8 @@ function searchUsers(db, req, res) {
 }
 
 function getFriendList(db, req, res) {
-	sid = req.params.sessionid;
-	email = req.params.email;
+	let sid = req.params.sessionid;
+	let email = req.params.email;
 	if (ObjectID.isValid(sid)) {
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },

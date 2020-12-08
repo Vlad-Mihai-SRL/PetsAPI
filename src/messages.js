@@ -2,12 +2,12 @@ const e = require("express");
 const { ObjectID } = require("mongodb");
 
 function addMessage(db, req, res, pusher) {
-	senderid = req.body.senderid;
-	sid = req.body.sessionid;
-	senderemail = req.body.senderemail;
-	receiveremail = req.body.receiveremail;
-	receiverid = req.body.receiverid;
-	content = req.body.content;
+	let senderid = req.body.senderid;
+	let sid = req.body.sessionid;
+	let senderemail = req.body.senderemail;
+	let receiveremail = req.body.receiveremail;
+	let receiverid = req.body.receiverid;
+	let content = req.body.content;
 	if (ObjectID.isValid(sid) && ObjectID.isValid(senderid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: senderemail },
@@ -34,9 +34,9 @@ function addMessage(db, req, res, pusher) {
 }
 
 function getMessages(db, req, res) {
-	email1 = req.params.email1;
-	email2 = req.params.email2;
-	sessionid = req.params.sessionid;
+	let email1 = req.params.email1;
+	let email2 = req.params.email2;
+	let sessionid = req.params.sessionid;
 	if (ObjectID.isValid(sessionid)) {
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sessionid), email: email1 },
@@ -70,20 +70,22 @@ function getMessages(db, req, res) {
 }
 
 function hasNewMessages(db, req, res) {
-	sid = req.params.id;
-	email = req.params.email;
-	email2 = req.params.email2;
-	console.log("Entry : ", email2, email);
-	if (ObjectID.isValid(sid))
+	let sid = req.params.id;
+	let email = req.params.email;
+	let email2 = req.params.email2;
+	console.log("Entry : ", email2, email, sid);
+	if (ObjectID.isValid(sid)) {
+		console.log(email2);
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
 			(err, data) => {
-				console.log("Second Entry : ", email2);
+				console.log("Second Entry : ", req.params.email2, email2);
 				if (err || data == null) res.send({ reason: "wrong id" });
 				else {
 					db.collection("messages")
-						.find({ receiver: email, sender: email2, seen: false })
+						.find({ receiver: email, sender: req.params.email2, seen: false })
 						.toArray((err, val) => {
+							console.log(val);
 							if (err || val == null || val.length == 0)
 								res.send({ result: "no new messages" });
 							else res.send({ result: "you have a new message" });
@@ -91,7 +93,7 @@ function hasNewMessages(db, req, res) {
 				}
 			}
 		);
-	else res.send({ reason: "invalid" });
+	} else res.send({ reason: "invalid" });
 }
 
 function seenMessage(db, req, res) {

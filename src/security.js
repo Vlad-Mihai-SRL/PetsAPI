@@ -79,8 +79,8 @@ function Login(db, req, res) {
 }
 
 function ValidateSession(db, req, res) {
-	id = req.params.id;
-	email = req.params.email;
+	let id = req.params.id;
+	let email = req.params.email;
 	if (ObjectID.isValid(id))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(id), email: email },
@@ -93,12 +93,12 @@ function ValidateSession(db, req, res) {
 }
 
 function updateProfileAnimal(db, req, res) {
-	ind = req.body.ind;
-	sid = req.body.id;
-	email = req.body.email;
-	animal = req.body.animal;
-	ownerdate = req.body.ownerdate;
-	fname = req.body.fullname;
+	let ind = req.body.ind;
+	let sid = req.body.id;
+	let email = req.body.email;
+	let animal = req.body.animal;
+	let ownerdate = req.body.ownerdate;
+	let fname = req.body.fullname;
 	console.log(fname);
 	if (ObjectID.isValid(sid))
 		db.collection("sessions").findOne(
@@ -131,10 +131,10 @@ async function changeProfilePic(db, req, res) {
 		if (!req.files) {
 			res.send({ reason: "no files uploaded" });
 		} else {
-			avatar = req.files.avatar;
-			email = req.body.email;
-			sessionID = req.body.id;
-			ind = req.body.ind;
+			let avatar = req.files.avatar;
+			let email = req.body.email;
+			let sessionID = req.body.id;
+			let ind = req.body.ind;
 			console.log(email, sessionID, ind, avatar.name);
 			if (ObjectID.isValid(sessionID)) {
 				db.collection("sessions").findOne(
