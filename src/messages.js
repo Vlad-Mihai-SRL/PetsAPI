@@ -85,6 +85,7 @@ function hasNewMessages(db, req, res) {
 					db.collection("messages").findOne(
 						{ receiver: email, sender: email2, seen: false },
 						(err, data) => {
+							console.log(err, data);
 							if (err || data == null) res.send({ result: "no new messages" });
 							else res.send({ result: "you have a new message" });
 						}
