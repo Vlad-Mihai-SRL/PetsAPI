@@ -84,7 +84,7 @@ function hasNewMessages(db, req, res) {
 					db.collection("messages")
 						.find({ receiver: email, sender: email2, seen: false })
 						.toArray((val) => {
-							if (val == null || data.length == 0)
+							if (val == null || val.length == 0)
 								res.send({ result: "no new messages" });
 							else res.send({ result: "you have a new message" });
 						});
