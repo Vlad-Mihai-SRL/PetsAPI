@@ -1,3 +1,4 @@
+const e = require("express");
 const { ObjectID } = require("mongodb");
 
 function addMessage(db, req, res, pusher) {
@@ -16,6 +17,7 @@ function addMessage(db, req, res, pusher) {
 					pusher.trigger(receiveremail, "newmessage", {
 						message: content,
 						sender: senderemail,
+						mid: data._id,
 					});
 					res.send();
 					db.collection("messages").insertOne({
@@ -62,6 +64,7 @@ function getMessages(db, req, res) {
 										return new Date(a.date) - new Date(b.date);
 									}),
 								});
+								db.collection("messages").updateMany({ sender: email1 });
 							}
 						});
 			}
@@ -72,6 +75,7 @@ function getMessages(db, req, res) {
 function hasNewMessages(db, req, res) {
 	sid = req.params.id;
 	email = req.params.email;
+	email2 = req.params.email2;
 	if (ObjectID.isValid(sid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
@@ -79,7 +83,7 @@ function hasNewMessages(db, req, res) {
 				if (err || data == null) res.send({ reason: "wrong id" });
 				else {
 					db.collection("messages").findOne(
-						{ receiver: email, seen: false },
+						{ receiver: email, sender: email2, seen: false },
 						(err, data) => {
 							if (err || data == null) res.send({ result: "no new messages" });
 							else res.send({ result: "you have a new message" });
@@ -91,6 +95,30 @@ function hasNewMessages(db, req, res) {
 	else res.send({ reason: "invalid" });
 }
 
+function seenMessage(db, req, res) {
+	sid = req.body.sessionid;
+	email = req.body.email;
+	mid = req.body.messageid;
+	if (ObjectID.isValid(sid) && ObjectID.isValid(mid))
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: email },
+			(err, data) => {
+				if (err || data == null) {
+					res.send({ reason: "wrong sid" });
+				} else
+					db.collection("messages").updateOne(
+						{ _id: ObjectID(mid), receiver: email },
+						{ $set: { seen: true } },
+						(err, data) => {
+							res.send();
+						}
+					);
+			}
+		);
+	else res.send({ reason: "invalid id" });
+}
+
+exports.seenMessage = seenMessage;
 exports.hasNewMessages = hasNewMessages;
 exports.getMessages = getMessages;
 exports.addMessage = addMessage;
