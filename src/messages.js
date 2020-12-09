@@ -59,7 +59,7 @@ function getMessages(db, req, res) {
 									}),
 								});
 								db.collection("messages").updateMany(
-									{ sender: email1 },
+									{ receiver: email1, sender: email2 },
 									{ $set: { seen: true } }
 								);
 							}
