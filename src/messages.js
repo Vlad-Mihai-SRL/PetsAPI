@@ -14,19 +14,23 @@ function addMessage(db, req, res, pusher) {
 			(err, data) => {
 				if (err || data == null) res.send({ reason: "wrong login" });
 				else {
-					pusher.trigger(receiveremail, "newmessage", {
-						message: content,
-						sender: senderemail,
-						mid: data._id,
-					});
 					res.send();
-					db.collection("messages").insertOne({
-						sender: senderemail,
-						receiver: receiveremail,
-						content: content,
-						seen: false,
-						date: new Date(),
-					});
+					db.collection("messages").insertOne(
+						{
+							sender: senderemail,
+							receiver: receiveremail,
+							content: content,
+							seen: false,
+							date: new Date(),
+						},
+						(err, data) => {
+							pusher.trigger(receiveremail, "newmessage", {
+								message: content,
+								sender: senderemail,
+								mid: data.insertedId,
+							});
+						}
+					);
 				}
 			}
 		);
