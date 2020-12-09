@@ -97,9 +97,10 @@ function hasNewMessages(db, req, res) {
 }
 
 function seenMessage(db, req, res) {
-	sid = req.body.sessionid;
-	email = req.body.email;
-	mid = req.body.messageid;
+	let sid = req.body.sessionid;
+	let email = req.body.email;
+	let mid = req.body.messageid;
+	console.log(mid, sid, email);
 	if (ObjectID.isValid(sid) && ObjectID.isValid(mid))
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
