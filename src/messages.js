@@ -73,7 +73,7 @@ function getMessages(db, req, res) {
 	} else res.send({ reason: "invalid session" });
 }
 
-function hasNewMessages(db, req, res) {
+function hasNewMessagesFromUser(db, req, res) {
 	let sid = req.params.id;
 	let email = req.params.email;
 	let email2 = req.params.email2;
@@ -86,14 +86,36 @@ function hasNewMessages(db, req, res) {
 				console.log("Second Entry : ", req.params.email2, email2);
 				if (err || data == null) res.send({ reason: "wrong id" });
 				else {
-					db.collection("messages")
-						.find({ receiver: email, sender: req.params.email2, seen: false })
-						.toArray((err, val) => {
-							console.log(val);
-							if (err || val == null || val.length == 0)
-								res.send({ result: "no new messages" });
+					db.collection("messages").findOne(
+						{ receiver: email, sender: req.params.email2, seen: false },
+						(err, data) => {
+							if (err || data == null) res.send({ result: "no new messages" });
 							else res.send({ result: "you have a new message" });
-						});
+						}
+					);
+				}
+			}
+		);
+	} else res.send({ reason: "invalid" });
+}
+
+function hasNewMessages(db, req, res) {
+	let sid = req.params.id;
+	let email = req.params.email;
+	if (ObjectID.isValid(sid)) {
+		console.log(email2);
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sid), email: email },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "wrong id" });
+				else {
+					db.collection("messages").findOne(
+						{ receiver: email, seen: false },
+						(err, data) => {
+							if (err || data == null) res.send({ result: "no new messages" });
+							else res.send({ result: "you have a new message" });
+						}
+					);
 				}
 			}
 		);
@@ -126,5 +148,6 @@ function seenMessage(db, req, res) {
 
 exports.seenMessage = seenMessage;
 exports.hasNewMessages = hasNewMessages;
+exports.hasNewMessagesFromUser = hasNewMessagesFromUser;
 exports.getMessages = getMessages;
 exports.addMessage = addMessage;
