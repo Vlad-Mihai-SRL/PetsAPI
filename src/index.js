@@ -129,7 +129,7 @@ async function main() {
 	app.get("/api/has-new-messages-from-user/:id/:email/:email2", (req, res) => {
 		MessageModule.hasNewMessagesFromUser(db, req, res);
 	});
-	app.get("/api/has-new-messages/:id/:email/:email2", (req, res) => {
+	app.get("/api/has-new-messages/:id/:email", (req, res) => {
 		MessageModule.hasNewMessages(db, req, res);
 	});
 	app.post("/api/seen-message", (req, res) => {

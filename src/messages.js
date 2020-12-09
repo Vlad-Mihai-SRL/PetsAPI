@@ -103,7 +103,6 @@ function hasNewMessages(db, req, res) {
 	let sid = req.params.id;
 	let email = req.params.email;
 	if (ObjectID.isValid(sid)) {
-		console.log(email2);
 		db.collection("sessions").findOne(
 			{ _id: ObjectID(sid), email: email },
 			(err, data) => {
