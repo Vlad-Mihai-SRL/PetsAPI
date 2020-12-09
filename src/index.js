@@ -132,6 +132,9 @@ async function main() {
 	app.get("/api/has-new-messages/:id/:email", (req, res) => {
 		MessageModule.hasNewMessages(db, req, res);
 	});
+	app.get("/api/get-user-profile/:email", (req, res) => {
+		FunctionalityModule.getUserProfile(db, req, res);
+	});
 	app.post("/api/seen-message", (req, res) => {
 		MessageModule.seenMessage(db, req, res);
 	});

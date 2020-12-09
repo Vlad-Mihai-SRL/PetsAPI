@@ -2,6 +2,7 @@ const e = require("express");
 const { fromPairs } = require("lodash");
 const { ObjectId } = require("mongodb");
 const _ = require("lodash");
+const { response } = require("express");
 const ObjectID = require("mongodb").ObjectID;
 
 function getProfile(db, req, res) {
@@ -342,6 +343,26 @@ function getFriendList(db, req, res) {
 	} else res.send({ reason: "invalid sid" });
 }
 
+function getUserProfile(db, req, res) {
+	let email = req.params.email;
+	db.collection("users").findOne({ email: email }, (err, data) => {
+		if (err || data == null) res.send({ reason: "invalid email" });
+		else {
+			db.collection("posts")
+				.find({ author: email })
+				.toArray((err, val) => {
+					let response = {
+						email: data.email,
+						petname: data.pets[0].name,
+						posts: val,
+					};
+					res.send(response);
+				});
+		}
+	});
+}
+
+exports.getUserProfile = getUserProfile;
 exports.getFriendList = getFriendList;
 exports.searchUsers = searchUsers;
 exports.getFriendRequests = getFriendRequests;
