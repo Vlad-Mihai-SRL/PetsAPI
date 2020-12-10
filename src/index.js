@@ -138,6 +138,9 @@ async function main() {
 	app.post("/api/seen-message", (req, res) => {
 		MessageModule.seenMessage(db, req, res);
 	});
+	app.post("/api/change-profile-cover", (req, res) => {
+		SecurityModule.changeProfileCover(db, req, res);
+	});
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});

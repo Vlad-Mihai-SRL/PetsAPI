@@ -58,6 +58,21 @@ function AddUser(db, req, res) {
 						)
 					)
 				);
+				fs.createReadStream(
+					path.join(__dirname, "..", "public", "defaultpp.png")
+				).pipe(
+					fs.createWriteStream(
+						path.join(
+							__dirname,
+							"..",
+							"public",
+							"users",
+							req.body.email,
+							"0",
+							"cp_min.webp"
+						)
+					)
+				);
 				res.status(201).send();
 			}
 		}
@@ -313,6 +328,84 @@ async function addPost(db, req, res) {
 	}
 }
 
+async function changeProfileCover(db, req, res) {
+	try {
+		if (!req.files) {
+			res.send({ reason: "no files uploaded" });
+		} else {
+			let avatar = req.files.avatar;
+			let email = req.body.email;
+			let sessionID = req.body.id;
+			let ind = req.body.ind;
+			console.log(email, sessionID, ind, avatar.name);
+			if (ObjectID.isValid(sessionID)) {
+				db.collection("sessions").findOne(
+					{ _id: ObjectID(sessionID), email: email },
+					(err, data) => {
+						if (err || data == null) res.send({ reason: "wrong" });
+						else {
+							avatar
+								.mv(
+									path.join(
+										__dirname,
+										"..",
+										"public",
+										"users",
+										email,
+										ind,
+										"cp.png"
+									)
+								)
+								.then((val) => {
+									sharp(
+										path.join(
+											__dirname,
+											"..",
+											"public",
+											"users",
+											email,
+											ind,
+											"cp" + ".png"
+										)
+									).toFile(
+										path.join(
+											__dirname,
+											"..",
+											"public",
+											"users",
+											email,
+											ind,
+											"cp" + "_min" + ".webp"
+										),
+										(err, info) => {
+											if (err) console.log(err);
+											fs.unlinkSync(
+												path.join(
+													__dirname,
+													"..",
+													"public",
+													"users",
+													email,
+													ind,
+													"cp" + ".png"
+												)
+											);
+										}
+									);
+								});
+
+							res.send();
+						}
+					}
+				);
+			} else res.send({ reason: "wrong sid" });
+		}
+	} catch (err) {
+		res.send({ reason: "unknown" });
+	}
+}
+
+exports.changeProfileCover = changeProfileCover;
 exports.addPost = addPost;
 exports.updateProfileAnimal = updateProfileAnimal;
 exports.AddUser = AddUser;
