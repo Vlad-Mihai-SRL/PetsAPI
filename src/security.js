@@ -59,7 +59,7 @@ function AddUser(db, req, res) {
 					)
 				);
 				fs.createReadStream(
-					path.join(__dirname, "..", "public", "defaultpp.png")
+					path.join(__dirname, "..", "public", "defaultcp.jpg")
 				).pipe(
 					fs.createWriteStream(
 						path.join(
