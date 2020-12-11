@@ -18,6 +18,7 @@ const Pusher = require("pusher");
 const MessageModule = require("./messages");
 const busboy = require("busboy");
 var bodyParser = require("body-parser");
+const busboyBodyParser = require("busboy-body-parser");
 
 async function main() {
 	const uri = process.env.DB_URI;
@@ -47,14 +48,6 @@ async function main() {
 	app.use(express.json());
 	app.use(cors());
 	app.use(bodyParser.json());
-	app.use(
-		fileUpload({
-			createParentPath: true,
-			limits: {
-				fileSize: 32 * 1024 * 1024,
-			},
-		})
-	);
 	db.collection("users").createIndex({ fullname: "text", email: "text" });
 
 	app.use("/public", express.static(path.join(__dirname, "..", "public")));
@@ -67,9 +60,18 @@ async function main() {
 		SecurityModule.AddUser(db, req, res);
 	});
 
-	app.post("/api/add-post", async function (req, res) {
-		SecurityModule.addPost(db, req, res);
-	});
+	app.post(
+		"/api/add-post",
+		fileUpload({
+			createParentPath: true,
+			limits: {
+				fileSize: 32 * 1024 * 1024,
+			},
+		}),
+		async function (req, res) {
+			SecurityModule.addPost(db, req, res);
+		}
+	);
 
 	app.post("/api/login", (req, res) => {
 		SecurityModule.Login(db, req, res);
