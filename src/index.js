@@ -47,7 +47,14 @@ async function main() {
 	app.use(express.json());
 	app.use(cors());
 	app.use(bodyParser.json());
-
+	app.use(
+		fileUpload({
+			createParentPath: true,
+			limits: {
+				fileSize: 32 * 1024 * 1024,
+			},
+		})
+	);
 	db.collection("users").createIndex({ fullname: "text", email: "text" });
 
 	app.use("/public", express.static(path.join(__dirname, "..", "public")));
