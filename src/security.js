@@ -1,9 +1,10 @@
 const md5 = require("md5");
 const ObjectID = require("mongodb").ObjectID;
-const fs = require("fs");
-const path = require("path");
 const { type } = require("os");
 const sharp = require("sharp");
+const busboy = require("busboy"); // Middleware to handle the file upload https://github.com/mscdex/connect-busboy
+const path = require("path"); // Used for manipulation with path
+const fs = require("fs-extra");
 
 function AddUser(db, req, res) {
 	db.collection("users").insertOne(
@@ -142,91 +143,70 @@ function updateProfileAnimal(db, req, res) {
 }
 
 async function changeProfilePic(db, req, res) {
-	try {
-		if (!req.files) {
-			res.send({ reason: "no files uploaded" });
-		} else {
-			let avatar = req.files.avatar;
-			let email = req.body.email;
-			let sessionID = req.body.id;
-			let ind = req.body.ind;
-			console.log(email, sessionID, ind, avatar.name);
-			if (ObjectID.isValid(sessionID)) {
-				db.collection("sessions").findOne(
-					{ _id: ObjectID(sessionID), email: email },
-					(err, data) => {
-						if (err || data == null) res.send({ reason: "wrong" });
-						else {
-							fs.unlinkSync(
-								path.join(
-									__dirname,
-									"..",
-									"public",
-									"users",
-									email,
-									ind,
-									"pp" + "_min.webp"
-								)
-							);
-							avatar
-								.mv(
-									path.join(
-										__dirname,
-										"..",
-										"public",
-										"users",
-										email,
-										ind,
-										"pp.png"
-									)
-								)
-								.then((val) => {
-									sharp(
-										path.join(
-											__dirname,
-											"..",
-											"public",
-											"users",
-											email,
-											ind,
-											"pp" + ".png"
-										)
-									).toFile(
-										path.join(
-											__dirname,
-											"..",
-											"public",
-											"users",
-											email,
-											ind,
-											"pp" + "_min" + ".webp"
-										),
-										(err, info) => {
-											if (err) console.log(err);
-											fs.unlinkSync(
-												path.join(
-													__dirname,
-													"..",
-													"public",
-													"users",
-													email,
-													ind,
-													"pp" + ".png"
-												)
-											);
-										}
-									);
-								});
+	let email = req.params.email;
+	let sessionID = req.params.id;
+	let ind = req.params.ind;
+	let filedata = null;
+	var bb = new busboy({ headers: req.headers });
+	req.pipe(bb);
 
-							res.send();
-						}
+	bb.on("finish", function () {
+		console.log("finished");
+		console.log(email, sessionID, ind);
+		if (ObjectID.isValid(sessionID)) {
+			db.collection("sessions").findOne(
+				{ _id: ObjectID(sessionID), email: email },
+				(err, data) => {
+					console.log("here??");
+					if (err || data == null) res.send({ reason: "wrong" });
+					else {
+						console.log(`Upload of file started`);
+						fs.rename(
+							path.join(
+								__dirname,
+								"..",
+								"public",
+								"users",
+								email,
+								ind,
+								"pp_min_temp.webp"
+							),
+							path.join(
+								__dirname,
+								"..",
+								"public",
+								"users",
+								email,
+								ind,
+								"pp_min.webp"
+							)
+						);
+						res.send();
 					}
-				);
-			} else res.send({ reason: "wrong sid" });
-		}
-	} catch (err) {
-		res.send({ reason: "unknown" });
-	}
+				}
+			);
+		} else res.send({ reason: "wrong sid" });
+	});
+	const fstream = fs.createWriteStream(
+		path.join(
+			__dirname,
+			"..",
+			"public",
+			"users",
+			email,
+			ind,
+			"pp_min_temp.webp"
+		)
+	);
+	fstream.on("close", () => {
+		console.log(`Upload of '$' finished`);
+	});
+	bb.on("file", (fieldname, file, filename) => {
+		console.log("fisier");
+
+		file.pipe(fstream);
+	});
+	res.send();
 }
 
 async function addPost(db, req, res) {
@@ -351,91 +331,70 @@ async function addPost(db, req, res) {
 }
 
 async function changeProfileCover(db, req, res) {
-	try {
-		if (!req.files) {
-			res.send({ reason: "no files uploaded" });
-		} else {
-			let avatar = req.files.avatar;
-			let email = req.body.email;
-			let sessionID = req.body.id;
-			let ind = req.body.ind;
-			console.log(email, sessionID, ind, avatar.name);
-			if (ObjectID.isValid(sessionID)) {
-				db.collection("sessions").findOne(
-					{ _id: ObjectID(sessionID), email: email },
-					(err, data) => {
-						if (err || data == null) res.send({ reason: "wrong" });
-						else {
-							fs.unlinkSync(
-								path.join(
-									__dirname,
-									"..",
-									"public",
-									"users",
-									email,
-									ind,
-									"cp" + "_min.webp"
-								)
-							);
-							avatar
-								.mv(
-									path.join(
-										__dirname,
-										"..",
-										"public",
-										"users",
-										email,
-										ind,
-										"cp.png"
-									)
-								)
-								.then((val) => {
-									sharp(
-										path.join(
-											__dirname,
-											"..",
-											"public",
-											"users",
-											email,
-											ind,
-											"cp" + ".png"
-										)
-									).toFile(
-										path.join(
-											__dirname,
-											"..",
-											"public",
-											"users",
-											email,
-											ind,
-											"cp" + "_min" + ".webp"
-										),
-										(err, info) => {
-											if (err) console.log(err);
-											fs.unlinkSync(
-												path.join(
-													__dirname,
-													"..",
-													"public",
-													"users",
-													email,
-													ind,
-													"cp" + ".png"
-												)
-											);
-										}
-									);
-								});
+	let email = req.params.email;
+	let sessionID = req.params.id;
+	let ind = req.params.ind;
+	let filedata = null;
+	var bb = new busboy({ headers: req.headers });
+	req.pipe(bb);
 
-							res.send();
-						}
+	bb.on("finish", function () {
+		console.log("finished");
+		console.log(email, sessionID, ind);
+		if (ObjectID.isValid(sessionID)) {
+			db.collection("sessions").findOne(
+				{ _id: ObjectID(sessionID), email: email },
+				(err, data) => {
+					console.log("here??");
+					if (err || data == null) res.send({ reason: "wrong" });
+					else {
+						console.log(`Upload of file started`);
+						fs.rename(
+							path.join(
+								__dirname,
+								"..",
+								"public",
+								"users",
+								email,
+								ind,
+								"cp_min_temp.webp"
+							),
+							path.join(
+								__dirname,
+								"..",
+								"public",
+								"users",
+								email,
+								ind,
+								"cp_min.webp"
+							)
+						);
+						res.send();
 					}
-				);
-			} else res.send({ reason: "wrong sid" });
-		}
-	} catch (err) {
-		res.send({ reason: "unknown" });
-	}
+				}
+			);
+		} else res.send({ reason: "wrong sid" });
+	});
+	const fstream = fs.createWriteStream(
+		path.join(
+			__dirname,
+			"..",
+			"public",
+			"users",
+			email,
+			ind,
+			"cp_min_temp.webp"
+		)
+	);
+	fstream.on("close", () => {
+		console.log(`Upload of '$' finished`);
+	});
+	bb.on("file", (fieldname, file, filename) => {
+		console.log("fisier");
+
+		file.pipe(fstream);
+	});
+	res.send();
 }
 
 exports.changeProfileCover = changeProfileCover;
