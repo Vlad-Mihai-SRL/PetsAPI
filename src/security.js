@@ -157,6 +157,17 @@ async function changeProfilePic(db, req, res) {
 					(err, data) => {
 						if (err || data == null) res.send({ reason: "wrong" });
 						else {
+							fs.unlinkSync(
+								path.join(
+									__dirname,
+									"..",
+									"public",
+									"users",
+									email,
+									ind,
+									"cp" + "_min.webp"
+								)
+							);
 							avatar
 								.mv(
 									path.join(
@@ -253,6 +264,17 @@ async function addPost(db, req, res) {
 										res.send({ reason: "unkown" });
 									} else {
 										if (typesx == "Photo") {
+											fs.unlinkSync(
+												path.join(
+													__dirname,
+													"..",
+													"public",
+													"users",
+													email,
+													ind,
+													"cp" + "_min.webp"
+												)
+											);
 											avatar
 												.mv(
 													path.join(
