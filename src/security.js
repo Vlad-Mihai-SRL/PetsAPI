@@ -223,13 +223,13 @@ async function addPost(db, req, res) {
 		if (!req.files) {
 			res.send({ reason: "no files uploaded" });
 		} else {
-			avatar = req.files.file;
-			email = req.body.email;
-			sessionID = req.body.id;
-			ind = req.body.ind;
-			content = req.body.content;
-			petname = req.body.petname;
-			typesx = req.body.typesx;
+			let avatar = req.files.file;
+			let email = req.body.email;
+			let sessionID = req.body.id;
+			let ind = req.body.ind;
+			let content = req.body.content;
+			let petname = req.body.petname;
+			let typesx = req.body.typesx;
 			if (ObjectID.isValid(sessionID)) {
 				db.collection("sessions").findOne(
 					{ _id: ObjectID(sessionID), email: email },
@@ -344,6 +344,17 @@ async function changeProfileCover(db, req, res) {
 					(err, data) => {
 						if (err || data == null) res.send({ reason: "wrong" });
 						else {
+							fs.unlinkSync(
+								path.join(
+									__dirname,
+									"..",
+									"public",
+									"users",
+									email,
+									ind,
+									"cp" + "_min.webp"
+								)
+							);
 							avatar
 								.mv(
 									path.join(
