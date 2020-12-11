@@ -165,7 +165,7 @@ async function changeProfilePic(db, req, res) {
 									"users",
 									email,
 									ind,
-									"cp" + "_min.webp"
+									"pp" + "_min.webp"
 								)
 							);
 							avatar
