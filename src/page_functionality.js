@@ -355,7 +355,7 @@ function getUserProfile(db, req, res) {
 						email: data.email,
 						petname: data.pets[0].name,
 						posts: val.sort((a, b) => {
-							return new Date(b) - new Date(a);
+							return new Date(b.date) - new Date(a.date);
 						}),
 					};
 					res.send(response);
