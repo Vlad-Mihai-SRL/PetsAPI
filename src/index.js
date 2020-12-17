@@ -147,6 +147,9 @@ async function main() {
 	app.post("/api/change-profile-cover/:id/:email/:ind", async (req, res) => {
 		SecurityModule.changeProfileCover(db, req, res);
 	});
+	app.post("/api/delete-post", (req, res) => {
+		FunctionalityModule.deletePost(db, req, res);
+	});
 	app.listen(8080, () => {
 		console.log("Started on port 8080");
 	});

@@ -364,6 +364,29 @@ function getUserProfile(db, req, res) {
 	});
 }
 
+function deletePost(db, req, res) {
+	let postid = req.body.postid;
+	let sessionid = req.body.sessionid;
+	let email = req.body.email;
+	console.log(sessionid, email);
+	if (ObjectID.isValid(postid) && ObjectID.isValid(sessionid)) {
+		db.collection("sessions").findOne(
+			{ _id: ObjectID(sessionid), email: email },
+			(err, data) => {
+				if (err || data == null) res.send({ reason: "invalid sessionID" });
+				else
+					db.collection("posts").deleteOne(
+						{ _id: ObjectID(postid), author: email },
+						(err, data) => {
+							res.send();
+						}
+					);
+			}
+		);
+	} else res.send({ reason: "milbei" });
+}
+
+exports.deletePost = deletePost;
 exports.getUserProfile = getUserProfile;
 exports.getFriendList = getFriendList;
 exports.searchUsers = searchUsers;
